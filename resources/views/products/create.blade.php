@@ -18,14 +18,20 @@
 <div class="bg-dark p-4 m-0 text-center">
     <h3 class="text-white">Simple Laravel Crud</h3>
 </div>
-<div class="container">
+<div class="container overflow-hidden">
+  <!-- Your content here -->
+  <div class="row justify-content-center mt-4">
+<div class="col-md-10 d-flex justify-content-end">
+<a href="{{ route('products.index') }}" class="btn btn-dark">Show Products</a>
+</div>
+</div>
     <div class="row d-flex justify-content-center">
         <div class="col-md-10">
             <div class="card border-0 shadow-lg mt-5">
                 <div class="card-header bg-dark text-white">
                     <h4>Create Product</h4>
                 </div>
-                <form action="{{route('products.store')}}" method='post'>
+                <form enctype="multipart/form-data" action="{{route('products.store')}}" method='post'>
                 @csrf
                 <div class="card-body">
                     <div class="mb-3">
