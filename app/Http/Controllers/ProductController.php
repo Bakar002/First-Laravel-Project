@@ -117,7 +117,21 @@ public function store(Request $request)
         }
         
 
-        public function destroy(Request $request){}
-
-
-}
+        public function destroy($id) {
+            $product = Product::findOrFail($id);
+        
+            // Delete image file if it exists
+            if ($product->image) {
+                $imagePath = public_path('uploads/products') . '/' . $product->image;
+                if (file_exists($imagePath)) {
+                    unlink($imagePath);
+                }
+            }
+        
+            // Delete the product from the database
+            $product->delete();
+        
+            return redirect()->route("products.index")->with('success', 'Product deleted successfully.');
+        }
+        
+    }

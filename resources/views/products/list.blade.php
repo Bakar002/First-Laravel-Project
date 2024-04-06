@@ -42,38 +42,35 @@
                     <tr>
                         <th>ID</th>
                         <th>Image</th>
-
                         <th>NAME</th>
-
                         <th>SKU</th>
                         <th>PRICE</th>
                         <th>ACTION</th>
-
                     </tr>
                     @if($products->isNotEmpty())
-@foreach($products as $product)
-<tr>
-    <td>{{$product->id}}</td>
-    <td>
-        @if($product->image !="")
-        <img width='50' src="{{asset('uploads/products/'.$product->image)}}" alt="helo">
-        @endif
-    </td>
-    <td>{{$product->name}}</td>
-    <td>{{$product->sku}}</td>
-    <td>${{$product->price}}</td>
-    <td>{{\Carbon\Carbon::parse($product->created_at)->format('d M,Y')}}</td>
-   
-    <td>
-<a href="{{route("products.edit",$product->id)}}" class="btn btn-dark">Edit</a>
-<a href="" class="btn btn-danger">Delete</a>
-</td>
-</tr>
-@endforeach 
+                        @foreach($products as $product)
+                            <tr>
+                                <td>{{$product->id}}</td>
+                                <td>
+                                    @if($product->image !="")
+                                        <img width='50' src="{{asset('uploads/products/'.$product->image)}}" alt="hello">
+                                    @endif
+                                </td>
+                                <td>{{$product->name}}</td>
+                                <td>{{$product->sku}}</td>
+                                <td>${{$product->price}}</td>
+                                <td>{{\Carbon\Carbon::parse($product->created_at)->format('d M,Y')}}</td>
+                                <td>
+                                    <a href="{{route("products.edit",$product->id)}}" class="btn btn-dark">Edit</a>
+                                    <a href="#" onClick="deleteProduct({{$product->id}})" class="btn btn-danger">Delete</a>
+                                    <form id='delete-product-form-{{$product->id}}' action="{{route("products.destroy",$product->id)}}" method="POST" style="display: none;">
+                                        @csrf
+                                        @method('DELETE')
+                                    </form>
+                                </td>
+                            </tr>
+                        @endforeach
                     @endif
-
-
-
                 </table>
               </div>
             </div>
@@ -82,3 +79,10 @@
 </div>
 </body>
 </html>
+<script>
+    function deleteProduct(id) {
+        if(confirm("Are you sure you want to delete this product?")) {
+            document.getElementById('delete-product-form-'+id).submit();
+        }
+    }
+</script>
