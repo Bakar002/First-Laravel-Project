@@ -6,6 +6,7 @@ use App\Models\Product;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
 
+use Illuminate\Support\Str;
 
 class ProductController extends Controller
 {
@@ -41,7 +42,10 @@ public function store(Request $request)
         return redirect()->route("products.create")->withInput()->withErrors($validator);
     }
 
+
     $product = new Product();
+
+
     $product->name = $request->name;
     $product->price = $request->price;
     $product->sku = $request->sku;
@@ -61,11 +65,57 @@ public function store(Request $request)
 }
 
 
-        public function edit(){
+        public function edit($id){
+
+            $product = Product::findOrFail($id);
+
+            return view("products.edit",["product"=> $product]); 
 
         }
-        public function update(Request $request){}
-
+        public function update($id, Request $request) {
+            $product = Product::findOrFail($id);
+            $rules = [
+                "name" => "required|min:5",
+                "price" => "required|numeric",
+                "sku" => "required|min:3",
+            ];
+        
+            if ($request->hasFile('image')) {
+                $rules["image"] = 'image';
+            }
+        
+            $validator = Validator::make($request->all(), $rules);
+        
+            if ($validator->fails()) {
+                return redirect()->route("products.edit", $product->id)->withInput()->withErrors($validator);
+            }
+        
+            // Delete previous image if it exists
+            if ($product->image) {
+                $imagePath = public_path('uploads/products') . '/' . $product->image;
+                if (file_exists($imagePath)) {
+                    unlink($imagePath);
+                }
+            }
+        
+            $product->name = $request->name;
+            $product->price = $request->price;
+            $product->sku = $request->sku;
+            $product->description = $request->description;
+            $product->save();
+        
+            if ($request->hasFile('image')) {
+                $image = $request->file('image');
+                $ext = $image->getClientOriginalExtension();
+                $imageName = time() . '.' . $ext;
+                $image->move(public_path('uploads/products'), $imageName);
+                $product->image = $imageName;
+                $product->save();
+            }
+        
+            return redirect()->route("products.index")->with('success', 'Product updated successfully.');
+        }
+        
 
         public function destroy(Request $request){}
 
